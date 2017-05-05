@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <functional>
+#include <string>
 
 namespace bios {
 struct Function {
@@ -18,12 +19,17 @@ struct Function {
 inline bool noLog(mips::CPU& cpu) { return false; }
 
 inline bool dbgOutputChar(mips::CPU& cpu) {
-    if (cpu.debugOutput) putchar(cpu.reg[4]);
+    if (cpu.debugOutput) {
+        putchar(cpu.reg[4]);
+#ifdef ANDROID
+        cpu.logs += cpu.reg[4];
+#endif
+    }
     return false;  // Do not log function call
 }
 
 inline bool dbgOutputString(mips::CPU& cpu) {
-	if (!cpu.debugOutput) return false;
+    if (!cpu.debugOutput) return false;
     for (int i = 0; i < 80; i++) {
         char c = cpu.readMemory8(cpu.reg[4] + i);
         if (c == 0) {

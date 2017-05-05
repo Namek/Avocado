@@ -1,5 +1,4 @@
-workspace "Avocado"
-	configurations { "Debug", "Release" }
+require "premake/premake-androidmk/androidmk"
 
 newoption {
 	trigger = "disable-load-delay-slots",
@@ -15,6 +14,23 @@ newoption {
 filter "options:enable-breakpoints"
 	defines "ENABLE_BREAKPOINTS"
 
+workspace "Avocado"
+	configurations { "Debug", "Release" }
+
+	configuration { "androidmk" }
+		location "build/libs/jni"
+
+	filter "configurations:Debug"
+		defines { "DEBUG" }
+		symbols "On"
+	
+	filter "configurations:Release"
+		defines { "NDEBUG" }
+		optimize "Full"
+
+
+ndkabi "x86_64"
+
 project "glad"
 	kind "StaticLib"
 	language "c"
@@ -25,6 +41,7 @@ project "glad"
 	files { 
 		"externals/glad/src/*.c",
 	}
+
 
 project "Avocado"
 	kind "ConsoleApp"
@@ -53,15 +70,7 @@ project "Avocado"
 		"src/platform/**.*"
 	}
 	
-	filter "configurations:Debug"
-		defines { "DEBUG" }
-		symbols "On"
-	
-	filter "configurations:Release"
-		defines { "NDEBUG" }
-		optimize "Full"
-		
-	configuration { "windows" }
+	configuration { "vs2012", "vs2013", "vs2015", "vs2017" }
 		defines { "WIN32" }
 		libdirs { os.findlib("SDL2") }
 		libdirs { 
@@ -90,4 +99,12 @@ project "Avocado"
 			"-Wall",
 			"-Wextra",
 			"-Wno-unused-parameter",
+		}
+
+	configuration { "androidmk" }
+		kind "SharedLib"
+		defines { "ANDROID" }
+		files { 
+			"src/platform/android/**.cpp",
+			"src/platform/android/**.h"
 		}

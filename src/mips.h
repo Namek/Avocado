@@ -106,7 +106,7 @@ struct CPU {
     uint8_t scratchpad[SCRATCHPAD_SIZE];
     uint8_t expansion[EXPANSION_SIZE];
 
-    bool debugOutput = false;  // Print BIOS logs
+    bool debugOutput = true;  // Print BIOS logs
    public:
     // Devices
     std::unique_ptr<interrupt::Interrupt> interrupt;
@@ -148,12 +148,14 @@ struct CPU {
     gpu::GPU *getGPU() const { return gpu.get(); }
 
     // Helpers
+    std::string logs;
     bool biosLog = true;
     bool printStackTrace = false;
     bool disassemblyEnabled = false;
     char *_mnemonic = (char *)"";
     std::string _disasm;
     bool loadBios(std::string name);
+    bool loadBios(const char *biosFile, size_t length);
     bool loadExpansion(std::string name);
     bool loadExeFile(std::string exePath);
     void dumpRam();

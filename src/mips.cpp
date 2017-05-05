@@ -414,6 +414,13 @@ bool CPU::loadBios(std::string name) {
     return true;
 }
 
+bool CPU::loadBios(const char *biosFile, size_t length) {
+    assert(length == 512 * 1024);
+    std::copy(biosFile, biosFile + length, bios);
+    state = mips::CPU::State::run;
+    return true;
+}
+
 bool CPU::loadExpansion(std::string path) {
     auto _exp = getFileContents(path);
     if (_exp.empty()) {
