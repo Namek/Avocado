@@ -130,6 +130,7 @@ void hardReset() {
     }
 }
 
+OpenGL* gl;
 int start(int argc, char** argv) {
     loadConfigFile(CONFIG_NAME);
 
@@ -152,6 +153,7 @@ int start(int argc, char** argv) {
     }
 
     OpenGL opengl;
+    gl = &opengl;
 
     if (!opengl.init()) {
         printf("Cannot initialize OpenGL\n");

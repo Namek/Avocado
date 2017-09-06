@@ -103,7 +103,7 @@ void DMAChannel::write(uint32_t address, uint8_t data) {
                 addr = blockInfo & 0xffffff;
                 if (addr == 0xffffff || addr == 0) break;
 
-                if (++breaker > 0x4000) {
+                if (++breaker > 0x8000) {
                     printf("GPU DMA transfer too long, breaking.\n");
                     break;
                 }

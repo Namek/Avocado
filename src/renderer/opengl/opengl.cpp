@@ -132,7 +132,7 @@ bool OpenGL::setup() {
 
     createRenderBuffer();
     createBlitBuffer();
-    createVramTexture();
+    //    createVramTexture();
     createRenderTexture();
 
     return true;
@@ -152,7 +152,7 @@ void OpenGL::renderFirstStage(const std::vector<Vertex> &renderList, GPU *gpu) {
     glUniform2ui(renderShader->getUniform("drawingAreaBottomRight"), gpu->drawingAreaRight, gpu->drawingAreaBottom);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, vramTex);
+    glBindTexture(GL_TEXTURE_2D, renderTex);
 
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     glDrawArrays(GL_TRIANGLES, 0, renderList.size());
@@ -188,12 +188,12 @@ void OpenGL::render(GPU *gpu) {
     glBufferSubData(GL_ARRAY_BUFFER, 0, bb.size() * sizeof(BlitStruct), bb.data());
 
     // Update VRAM texture
-    glBindTexture(GL_TEXTURE_2D, vramTex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 512, 0, GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, gpu->vram.data());
+    //    glBindTexture(GL_TEXTURE_2D, vramTex);
+    //    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 512, 0, GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, gpu->vram.data());
 
     // Update Render texture
-    glBindTexture(GL_TEXTURE_2D, renderTex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 512, 0, GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, gpu->vram.data());
+    //    glBindTexture(GL_TEXTURE_2D, renderTex);
+    //    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 512, 0, GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, gpu->vram.data());
 
     auto &renderList = gpu->render();
 
@@ -213,8 +213,8 @@ void OpenGL::render(GPU *gpu) {
     renderSecondStage();
 
     // Read back rendered texture to VRAM
-    glBindTexture(GL_TEXTURE_2D, renderTex);
-    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, gpu->vram.data());
+    //    glBindTexture(GL_TEXTURE_2D, renderTex);
+    //    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, gpu->vram.data());
 
     renderList.clear();
 }

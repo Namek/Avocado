@@ -107,7 +107,12 @@ void main()
 	else color = vec4(fragColor, 0.0);
 
 	// Transparency
-	if (((fragFlags & 1u) == 1u || fragBitcount > 0u) && internalToPsxColor(color) == 0x0000u) discard;
+	if (((fragFlags & 1u) == 1u || fragBitcount > 0u)) {
+		if (internalToPsxColor(color) == 0x0000u) discard;
+
+		vec4 bg = vramRead(int(x), int(y));
+		// color = mix(color, bg, vec4(0.25));
+	}
 
 	// If textured and if not raw texture, add brightness
 	if (fragBitcount > 0u && (fragFlags & 2u) != 2u) {

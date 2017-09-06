@@ -1,6 +1,8 @@
 #include "gpu.h"
 #include <cstdio>
 #include <cassert>
+#include "renderer/opengl/opengl.h"
+#include <glad/glad.h>
 
 #define VRAM ((uint16_t(*)[vramWidth])(&vram[0]))
 
@@ -93,21 +95,28 @@ void GPU::drawPolygon(int x[4], int y[4], int c[4], int t[4], bool isFourVertex,
 }
 
 void GPU::cmdFillRectangle(const uint8_t command, uint32_t arguments[]) {
-    startX = currX = arguments[1] & 0xffff;
-    startY = currY = (arguments[1] & 0xffff0000) >> 16;
+    startX = currX = arguments[1] & 0xffff - drawingOffsetX;
+    startY = currY = (arguments[1] & 0xffff0000) >> 16 - drawingOffsetY;
     endX = startX + (arguments[2] & 0xffff);
     endY = startY + ((arguments[2] & 0xffff0000) >> 16);
 
     uint32_t color = to15bit(arguments[0] & 0xffffff);
 
+    //	int x[4] = { startX, endX, startX, endX  };
+    //	int y[4] = { startY, startY, endY, endY  };
+    //	int c[4] = { color, color, color, color };
+    //	drawPolygon(x, y, c, nullptr, true, false);
+
+    int ptr = 0;
     for (;;) {
-        VRAM[currY % 512][currX % 1024] = color;
+        vram[ptr++] = color;
 
         if (currX++ >= endX) {
             currX = startX;
             if (++currY >= endY) break;
         }
     }
+    glTexSubImage2D(GL_TEXTURE_2D, 0, startX, startY, endX - startX, endY - startY, GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, vram.data());
 
     cmd = Command::None;
 }
@@ -197,37 +206,54 @@ void GPU::cmdRectangle(const RectangleArgs arg, uint32_t arguments[]) {
     cmd = Command::None;
 }
 
+static int startXGl = 0;
+static int startYGl = 0;
+
+static int widthGl = 0;
+static int heightGl = 0;
+
+static int ptr = 0;
+
 void GPU::cmdCpuToVram1(const uint8_t command, uint32_t arguments[]) {
     if ((arguments[0] & 0x00ffffff) != 0) {
         printf("cmdCpuToVram1: Suspicious arg0: 0x%x\n", arguments[0]);
     }
-    startX = currX = arguments[1] & 0xffff;
-    startY = currY = (arguments[1] & 0xffff0000) >> 16;
+    startXGl = startX = currX = arguments[1] & 0xffff;
+    startYGl = startY = currY = (arguments[1] & 0xffff0000) >> 16;
 
     endX = startX + (arguments[2] & 0xffff);
     endY = startY + ((arguments[2] & 0xffff0000) >> 16);
+
+    widthGl = endX - startX;
+    heightGl = endY - startY;
+
+    ptr = 0;
 
     cmd = Command::CopyCpuToVram2;
     argumentCount = 1;
     currentArgument = 0;
 }
 
+extern OpenGL* gl;
 void GPU::cmdCpuToVram2(const uint8_t command, uint32_t arguments[]) {
     uint32_t byte = arguments[0];
 
     // TODO: ugly code
-    VRAM[currY % 512][currX++ % 1024] = byte & 0xffff;
-    if (currX >= endX) {
+    vram[ptr++] = byte & 0xffff;
+    if (++currX >= endX) {
         currX = startX;
         if (++currY >= endY) cmd = Command::None;
     }
 
-    VRAM[currY % 512][currX++ % 1024] = (byte >> 16) & 0xffff;
-    if (currX >= endX) {
+    vram[ptr++] = (byte >> 16) & 0xffff;
+    if (++currX >= endX) {
         currX = startX;
         if (++currY >= endY) cmd = Command::None;
     }
 
+    if (cmd == Command::None) {
+        glTexSubImage2D(GL_TEXTURE_2D, 0, startXGl, startYGl, widthGl, heightGl, GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, vram.data());
+    }
     currentArgument = 0;
 }
 
@@ -240,6 +266,9 @@ void GPU::cmdVramToCpu(const uint8_t command, uint32_t arguments[]) {
     startY = currY = (arguments[1] & 0xffff0000) >> 16;
     endX = startX + (arguments[2] & 0xffff);
     endY = startY + ((arguments[2] & 0xffff0000) >> 16);
+
+    printf("cmdVramToCpu: startX: %d, startY: %d, endX: %d, endY: %d\n", startX, startY, endX, endY);
+    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, vram.data());
 
     cmd = Command::None;
 }
@@ -263,12 +292,15 @@ void GPU::cmdVramToVram(const uint8_t command, uint32_t arguments[]) {
         return;
     }
 
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-            // TODO: boundary check!
-            VRAM[(dstY + y) % 512][(dstX + x) % 1024] = VRAM[(srcY + y) % 512][(srcX + x) % 1024];
-        }
-    }
+    //	printf("cmdVramToVram dstX: %d, dstY: %d, srcX: %d, srcY: %d, width: %d, height: %d\n", dstX, dstY, srcX, srcY, width, height);
+    glCopyTexSubImage2D(GL_TEXTURE_2D, 0, dstX, dstY, srcX, srcY, width, height);
+
+    //    for (int y = 0; y < height; y++) {
+    //        for (int x = 0; x < width; x++) {
+    //            // TODO: boundary check!
+    //            VRAM[(dstY + y) % 512][(dstX + x) % 1024] = VRAM[(srcY + y) % 512][(srcX + x) % 1024];
+    //        }
+    //    }
 
     cmd = Command::None;
 }
