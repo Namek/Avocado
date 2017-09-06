@@ -1,5 +1,6 @@
 #pragma once
-#include "glad/glad.h"
+#include <GLES3/gl3.h>
+#include <EGL/egl.h>
 
 class Attribute {
     GLint id;

@@ -1,9 +1,11 @@
 #include "opengl.h"
 #include <SDL.h>
-#include <glad/glad.h>
+#include <GLES3/gl3.h>
+#include <EGL/egl.h>
 #include <memory>
 #include "shader/Program.h"
 #include "device/gpu.h"
+#define GL_UNSIGNED_SHORT_1_5_5_5_REV_EXT 0x8366
 
 using namespace device::gpu;
 
@@ -20,7 +22,7 @@ bool OpenGL::init() {
     return true;
 }
 
-bool OpenGL::loadExtensions() { return gladLoadGLLoader(SDL_GL_GetProcAddress) != 0; }
+bool OpenGL::loadExtensions() { return true;}//gladLoadGLES2Loader(SDL_GL_GetProcAddress) != 0; }
 
 bool OpenGL::loadShaders() {
     renderShader = std::make_unique<Program>("data/shader/render");
@@ -95,7 +97,7 @@ void OpenGL::createVramTexture() {
     glGenTextures(1, &vramTex);
     glBindTexture(GL_TEXTURE_2D, vramTex);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 512, 0, GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 512, 0, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1, nullptr);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -113,7 +115,7 @@ void OpenGL::createRenderTexture() {
     glGenTextures(1, &renderTex);
     glBindTexture(GL_TEXTURE_2D, renderTex);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 512, 0, GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 512, 0, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1, nullptr);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -189,11 +191,11 @@ void OpenGL::render(GPU *gpu) {
 
     // Update VRAM texture
     glBindTexture(GL_TEXTURE_2D, vramTex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 512, 0, GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, gpu->vram.data());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 512, 0, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1 , gpu->vram.data());
 
     // Update Render texture
     glBindTexture(GL_TEXTURE_2D, renderTex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 512, 0, GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, gpu->vram.data());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 512, 0, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1, gpu->vram.data());
 
     auto &renderList = gpu->render();
 
@@ -214,7 +216,7 @@ void OpenGL::render(GPU *gpu) {
 
     // Read back rendered texture to VRAM
     glBindTexture(GL_TEXTURE_2D, renderTex);
-    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, gpu->vram.data());
+    // glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1, gpu->vram.data());
 
     renderList.clear();
 }

@@ -51,14 +51,15 @@ project "Avocado"
 	language "c++"
 	location "build/libs/Avocado"
 	targetdir "build/%{cfg.buildcfg}"
+	targetname "avocado.html"
 	debugdir "."
 	flags { "C++14" }
 
 	includedirs { 
 		"src", 
 		"externals/imgui",
-		"externals/SDL2/include",
-		"externals/glad/include",
+		-- "externals/SDL2/include",
+		-- "externals/glad/include",
 		"externals/glm",
 		"externals/json/src"
 	}
@@ -89,10 +90,10 @@ project "Avocado"
         editandcontinue "On"
 			
 	configuration { "windows" }
-		defines { "WIN32" }
+		-- defines { "WIN32" }
 		libdirs { os.findlib("SDL2") }
 		libdirs { 
-			"externals/SDL2/lib/x86"
+			-- "externals/SDL2/lib/x86"
 		}
 		files { 
 			"src/imgui/**.*",
@@ -101,11 +102,15 @@ project "Avocado"
 		}
 		links { 
 			"SDL2",
-			"glad",
+			-- "glad",
 			"imgui",
-			"OpenGL32"
+			-- "OpenGL32"
 		}
 		defines {"_CRT_SECURE_NO_WARNINGS"}
+		buildoptions {
+			"-s USE_SDL=2",
+			"-s USE_WEBGL2=1"
+		}
 
 
 	configuration { "linux", "gmake" }

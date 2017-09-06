@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
-#include <glad/glad.h>
+#include <GLES3/gl3.h>
+#include <EGL/egl.h>
 
 enum class ShaderType { Vertex, Fragment };
 

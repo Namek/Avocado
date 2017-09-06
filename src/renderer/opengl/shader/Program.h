@@ -2,7 +2,8 @@
 #include <vector>
 #include "Shader.h"
 #include "Attribute.h"
-#include <glad/glad.h>
+#include <GLES3/gl3.h>
+#include <EGL/egl.h>
 
 class Program {
     std::string name;

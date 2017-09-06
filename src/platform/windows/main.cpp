@@ -12,8 +12,6 @@
 #include "utils/file.h"
 #include "platform/windows/config.h"
 
-#undef main
-
 const int CPU_CLOCK = 33868500;
 const int GPU_CLOCK_NTSC = 53690000;
 
@@ -52,27 +50,27 @@ device::controller::DigitalController& getButtonState(SDL_Event& event) {
         }
     }
 
-    if (event.type == SDL_CONTROLLERBUTTONDOWN || event.type == SDL_CONTROLLERBUTTONUP) {
-#define B(a, b)                                             \
-    case a:                                                 \
-        buttons.##b = (event.cbutton.state == SDL_PRESSED); \
-        break;
-        switch (event.cbutton.button) {
-            B(SDL_CONTROLLER_BUTTON_DPAD_UP, up);
-            B(SDL_CONTROLLER_BUTTON_DPAD_RIGHT, right);
-            B(SDL_CONTROLLER_BUTTON_DPAD_DOWN, down);
-            B(SDL_CONTROLLER_BUTTON_DPAD_LEFT, left);
-            B(SDL_CONTROLLER_BUTTON_A, cross);
-            B(SDL_CONTROLLER_BUTTON_B, circle);
-            B(SDL_CONTROLLER_BUTTON_X, square);
-            B(SDL_CONTROLLER_BUTTON_Y, triangle);
-            B(SDL_CONTROLLER_BUTTON_BACK, select);
-            B(SDL_CONTROLLER_BUTTON_START, start);
-            B(SDL_CONTROLLER_BUTTON_LEFTSHOULDER, l1);
-            B(SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, r1);
-#undef B
-        }
-    }
+//     if (event.type == SDL_CONTROLLERBUTTONDOWN || event.type == SDL_CONTROLLERBUTTONUP) {
+// #define B(a, b)                                             \
+//     case a:                                                 \
+//         buttons.##b = (event.cbutton.state == SDL_PRESSED); \
+//         break;
+//         switch (event.cbutton.button) {
+//             B(SDL_CONTROLLER_BUTTON_DPAD_UP, up);
+//             B(SDL_CONTROLLER_BUTTON_DPAD_RIGHT, right);
+//             B(SDL_CONTROLLER_BUTTON_DPAD_DOWN, down);
+//             B(SDL_CONTROLLER_BUTTON_DPAD_LEFT, left);
+//             B(SDL_CONTROLLER_BUTTON_A, cross);
+//             B(SDL_CONTROLLER_BUTTON_B, circle);
+//             B(SDL_CONTROLLER_BUTTON_X, square);
+//             B(SDL_CONTROLLER_BUTTON_Y, triangle);
+//             B(SDL_CONTROLLER_BUTTON_BACK, select);
+//             B(SDL_CONTROLLER_BUTTON_START, start);
+//             B(SDL_CONTROLLER_BUTTON_LEFTSHOULDER, l1);
+//             B(SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, r1);
+// #undef B
+//         }
+    // }
     return buttons;
 }
 

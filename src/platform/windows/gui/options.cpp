@@ -1,9 +1,9 @@
 #include "gui.h"
 #include <imgui.h>
-#include <filesystem>
+// #include <filesystem>
 #include "platform/windows/config.h"
 
-using namespace std::experimental::filesystem::v1;
+// using namespace std::experimental::filesystem::v1;
 
 extern bool showBiosWindow;
 extern bool showControllerSetupWindow;
@@ -13,30 +13,30 @@ void biosSelectionWindow() {
     static std::vector<std::string> bioses;
     static int selectedBios = 0;
 
-    if (!biosesFound) {
-        bioses.clear();
-        auto dir = directory_iterator("data/bios");
-        for (auto& e : dir) {
-            if (!is_regular_file(e)) continue;
+    // if (!biosesFound) {
+    //     bioses.clear();
+    //     auto dir = directory_iterator("data/bios");
+    //     for (auto& e : dir) {
+    //         if (!is_regular_file(e)) continue;
 
-            auto path = e.path().string();
-            auto ext = getExtension(path);
-            std::transform(ext.begin(), ext.end(), ext.begin(), tolower);
+    //         auto path = e.path().string();
+    //         auto ext = getExtension(path);
+    //         std::transform(ext.begin(), ext.end(), ext.begin(), tolower);
 
-            if (ext == "bin" || ext == "rom") {
-                bioses.push_back(path);
-            }
-        }
-        biosesFound = true;
+    //         if (ext == "bin" || ext == "rom") {
+    //             bioses.push_back(path);
+    //         }
+    //     }
+    //     biosesFound = true;
 
-        int i = 0;
-        for (auto it = bioses.begin(); it != bioses.end(); ++it, ++i) {
-            if (*it == config["bios"]) {
-                selectedBios = i;
-                break;
-            }
-        }
-    }
+    //     int i = 0;
+    //     for (auto it = bioses.begin(); it != bioses.end(); ++it, ++i) {
+    //         if (*it == config["bios"]) {
+    //             selectedBios = i;
+    //             break;
+    //         }
+    //     }
+    // }
 
     ImGui::Begin("BIOS", &showBiosWindow, ImGuiWindowFlags_AlwaysAutoResize);
     if (bioses.empty()) {

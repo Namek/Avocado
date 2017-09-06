@@ -1,4 +1,6 @@
-#version 330 core
+#version 300 es
+
+precision mediump float;
 
 in ivec2 position;
 in uvec3 color;
@@ -19,9 +21,9 @@ uniform ivec2 drawingOffset;
 
 void main()
 {
-	vec2 pos = vec2((position.x + drawingOffset.x) / 1024.f, (position.y + drawingOffset.y) / 512.f);
-	fragColor = vec3(color.r / 255.f, color.g/255.f, color.b/255.f);
-	fragTexcoord = vec2(texcoord.x, texcoord.y);
+	vec2 pos = vec2(float(position.x + drawingOffset.x) / 1024.f, float(position.y + drawingOffset.y) / 512.f);
+	fragColor = vec3(float(color.r) / 255.f, float(color.g)/255.f, float(color.b)/255.f);
+	fragTexcoord = vec2(float(texcoord.x), float(texcoord.y));
 	fragBitcount = bitcount;
 	fragClut = clut;
 	fragTexpage = texpage;

@@ -1,4 +1,6 @@
-#version 330 core
+#version 300 es
+
+precision mediump float;
 
 in vec3 fragColor;
 in vec2 fragTexcoord;
@@ -88,7 +90,7 @@ vec4 clut8bit(vec2 coord, uvec2 clut)
 
 vec4 read16bit(vec2 coord)
 {	
-	return vramRead(int(fragTexpage.x + coord.x), int(fragTexpage.y + coord.y));
+	return vramRead(int(fragTexpage.x) + int(coord.x), int(fragTexpage.y) + int(coord.y));
 }
 
 
@@ -111,9 +113,9 @@ void main()
 
 	// If textured and if not raw texture, add brightness
 	if (fragBitcount > 0u && (fragFlags & 2u) != 2u) {
-		if (fragColor.r != 0) color.r = clamp(color.r + (fragColor.r - 0.5f) * 0.5f, 0.0, 1.0);
-		if (fragColor.g != 0) color.g = clamp(color.g + (fragColor.g - 0.5f) * 0.5f, 0.0, 1.0);
-		if (fragColor.b != 0) color.b = clamp(color.b + (fragColor.b - 0.5f) * 0.5f, 0.0, 1.0);
+		if (fragColor.r != 0.f) color.r = clamp(color.r + (fragColor.r - 0.5f) * 0.5f, 0.0, 1.0);
+		if (fragColor.g != 0.f) color.g = clamp(color.g + (fragColor.g - 0.5f) * 0.5f, 0.0, 1.0);
+		if (fragColor.b != 0.f) color.b = clamp(color.b + (fragColor.b - 0.5f) * 0.5f, 0.0, 1.0);
 	}
 
 
