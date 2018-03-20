@@ -94,8 +94,8 @@ before_install:
 
   # Prevent ccache & clang from spitting "argument unused during compilation"
   - if [ $COMPILER_NAME == "clang" ]; then
-      export CC="$CC -Qunused-arguments -fcolor-diagnostics"
-      export CXX="$CXX -Qunused-arguments -fcolor-diagnostics"
+      export CC="$CC -Qunused-arguments -fcolor-diagnostics";
+      export CXX="$CXX -Qunused-arguments -fcolor-diagnostics";
     fi
 
   # Print sysmem & compiler info
@@ -119,7 +119,7 @@ install:
   - export PATH=$PATH:$PWD/build/externals/SDL2/bin
   - cd externals/SDL2
   - ./configure --prefix=$PREFIX
-  - make -j2
+  - make -j3
   - make install
 
   - cd $BASE
@@ -138,7 +138,7 @@ before_script:
   - ./premake5 gmake
 
 script:
-  - make config=release -j2
+  - make config=release -j3
 
 after_success:
   - ./build/Release/avocado_test --success
