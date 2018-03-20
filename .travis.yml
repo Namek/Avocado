@@ -34,6 +34,7 @@ matrix:
             - clang-3.8
             - libc++-dev
             - libc++abi-dev
+            - g++-5
           sources:
             - ubuntu-toolchain-r-test
             - llvm-toolchain-precise-3.8
@@ -45,6 +46,7 @@ matrix:
             - clang-3.9
             - libc++-dev
             - libc++abi-dev
+            - g++-5
           sources:
             - ubuntu-toolchain-r-test
             - llvm-toolchain-trusty-3.9
@@ -54,8 +56,7 @@ matrix:
         apt:
           packages:
             - clang-4.0
-            - libc++-dev
-            - libc++abi-dev
+            - g++-6
           sources:
             - ubuntu-toolchain-r-test
             - llvm-toolchain-trusty-4.0
@@ -65,8 +66,7 @@ matrix:
         apt:
           packages:
             - clang-5.0
-            - libc++-dev
-            - libc++abi-dev
+            - g++-6
           sources:
             - ubuntu-toolchain-r-test
             - llvm-toolchain-trusty-5.0
