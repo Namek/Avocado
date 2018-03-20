@@ -92,6 +92,9 @@ before_install:
   - export CXX="ccache $CXX"
   - export BASE=$PWD
 
+  # Prevent ccache & clang from spitting "argument unused during compilation"
+  - export CCACHE_CPP2=1
+
   # Print sysmem & compiler info
   - uname -a
   - cat /proc/cpuinfo
