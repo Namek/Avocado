@@ -93,7 +93,10 @@ before_install:
   - export BASE=$PWD
 
   # Prevent ccache & clang from spitting "argument unused during compilation"
-  - export CCACHE_CPP2=1
+  - if [ $COMPILER_NAME == "clang" ]; then
+      export CC="$CC -Qunused-arguments -fcolor-diagnostics"
+      export CXX="$CXX -Qunused-arguments -fcolor-diagnostics"
+    fi
 
   # Print sysmem & compiler info
   - uname -a
